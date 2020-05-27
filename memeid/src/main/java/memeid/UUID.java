@@ -19,10 +19,10 @@ package memeid;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
-import java.util.regex.Pattern;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static memeid.Bits.*;
@@ -34,7 +34,6 @@ import static memeid.Bits.*;
  * @see <a href="https://tools.ietf.org/html/rfc4122">RFC-4122</a>
  */
 public class UUID implements Comparable<UUID> {
-    public static final Pattern uuidRegex = Pattern.compile("\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}");
 
     /**
      * The nil UUID is special form of UUID that is specified to have all 128 bits set to zero.
@@ -84,10 +83,28 @@ public class UUID implements Comparable<UUID> {
      *                                  described in {@link #toString}
      */
     public static UUID fromString(String name) {
-        if (uuidRegex.matcher(name).matches())
-            return fromUUID(java.util.UUID.fromString(name));
-        else
+        Objects.requireNonNull(name);
+
+        if (isNotValid(name))
             throw new IllegalArgumentException("Invalid UUID string: " + name);
+
+        long msb1 = parseCharsAt(name, 0);
+        long msb2 = parseCharsAt(name, 4);
+        long msb3 = parseCharsAt(name, 9);
+        long msb4 = parseCharsAt(name, 14);
+
+        long lsb1 = parseCharsAt(name, 19);
+        long lsb2 = parseCharsAt(name, 24);
+        long lsb3 = parseCharsAt(name, 28);
+        long lsb4 = parseCharsAt(name, 32);
+
+        if ((msb1 | msb2 | msb3 | msb4 | lsb1 | lsb2 | lsb3 | lsb4) < 0)
+            throw new IllegalArgumentException("Invalid UUID string: " + name);
+
+        long msb = msb1 << 48 | msb2 << 32 | msb3 << 16 | msb4;
+        long lsb = lsb1 << 48 | lsb2 << 32 | lsb3 << 16 | lsb4;
+
+        return from(msb, lsb);
     }
 
     /**
@@ -678,6 +695,76 @@ public class UUID implements Comparable<UUID> {
 
     private UUID(java.util.UUID juuid) {
         this.juuid = juuid;
+    }
+
+    private static Boolean isNotValid(String name) {
+        if (name.length() != 36) {
+            return true;
+        }
+
+        long ch1 = name.charAt(8);
+        long ch2 = name.charAt(13);
+        long ch3 = name.charAt(18);
+        long ch4 = name.charAt(23);
+
+        return (ch1 << 48 | ch2 << 32 | ch3 << 16 | ch4) != 0x2d002d002d002dL;
+
+    }
+
+
+    private static long parseCharsAt(String name, int pos) {
+        char ch1 = name.charAt(pos);
+        char ch2 = name.charAt(pos + 1);
+        char ch3 = name.charAt(pos + 2);
+        char ch4 = name.charAt(pos + 3);
+
+        return (ch1 | ch2 | ch3 | ch4) > 0xff ?
+                -1 : toHex(ch1) << 12 | toHex(ch2) << 8 | toHex(ch3) << 4 | toHex(ch4);
+    }
+
+    private static byte toHex(char ch) {
+        switch (ch) {
+            case '0':
+                return 0;
+            case '1':
+                return 1;
+            case '2':
+                return 2;
+            case '3':
+                return 3;
+            case '4':
+                return 4;
+            case '5':
+                return 5;
+            case '6':
+                return 6;
+            case '7':
+                return 7;
+            case '8':
+                return 8;
+            case '9':
+                return 9;
+            case 'a':
+            case 'A':
+                return 10;
+            case 'b':
+            case 'B':
+                return 11;
+            case 'c':
+            case 'C':
+                return 12;
+            case 'd':
+            case 'D':
+                return 13;
+            case 'e':
+            case 'E':
+                return 14;
+            case 'f':
+            case 'F':
+                return 15;
+            default:
+                return -1;
+        }
     }
 
 }
