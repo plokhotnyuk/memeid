@@ -4,6 +4,10 @@ ThisBuild / organization       := "com.47deg"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
+kotlinLib("stdlib")
+
+kotlincOptions += "-verbose"
+
 addCommandAlias("ci-test", "fix --check; +docs/mdoc; +website/mdoc; +test")
 addCommandAlias("ci-docs", "+docs/mdoc; headerCreateAll")
 addCommandAlias("ci-microsite", "website/publishMicrosite")
@@ -72,5 +76,6 @@ lazy val allProjects: Seq[ProjectReference] = Seq(
   `memeid4s-doobie`,
   `memeid4s-circe`,
   `memeid4s-http4s`,
-  `memeid4s-scalacheck`
+  `memeid4s-scalacheck`,
+  // `memeid-kotlin`   TODO only include when it's ready
 )
