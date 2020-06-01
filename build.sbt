@@ -61,6 +61,9 @@ lazy val `memeid4s-http4s` = project
 lazy val `memeid4s-scalacheck` = project
   .dependsOn(memeid)
 
+lazy val `memeid-kotlin` = project
+  .dependsOn(`memeid`)
+
 lazy val allProjects: Seq[ProjectReference] = Seq(
   `memeid`,
   memeid4s,
