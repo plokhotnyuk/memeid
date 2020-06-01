@@ -77,5 +77,5 @@ lazy val allProjects: Seq[ProjectReference] = Seq(
   `memeid4s-circe`,
   `memeid4s-http4s`,
   `memeid4s-scalacheck`,
-  // `memeid-kotlin`   TODO only include when it's ready
+  `memeid-kotlin`
 )
