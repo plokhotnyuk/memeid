@@ -45,7 +45,7 @@ object UUID {
      * Returns this UUID as the provided type if versions match;
      * otherwise, returns `None`.
      *
-     * @tparam A must be subtype of [[UUID]]
+     * @tparam A must be subtype of [[UUID]]x
      * @return this [[UUID]] as the provided type if versions match;
      *         otherwise, returns `None`
      */
