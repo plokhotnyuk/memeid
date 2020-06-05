@@ -5,7 +5,6 @@ ThisBuild / organization       := "com.47deg"
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 kotlinLib("stdlib")
-
 kotlincOptions += "-verbose"
 
 addCommandAlias("ci-test", "fix --check; +docs/mdoc; +website/mdoc; +test")
@@ -66,6 +65,9 @@ lazy val `memeid4s-scalacheck` = project
   .dependsOn(memeid)
 
 lazy val `memeid-kotlin` = project
+  .settings(crossPaths := false)
+  .settings(resolvers += DefaultMavenRepository)
+  .settings(skip in publish := true)
   .dependsOn(`memeid`)
 
 lazy val allProjects: Seq[ProjectReference] = Seq(
