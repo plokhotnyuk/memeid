@@ -32,7 +32,9 @@ object dependencies extends AutoPlugin {
   }
   // scala-steward:on
 
-  private val common = Seq("org.specs2" %% "specs2-scalacheck" % "4.9.2" % Test)
+  private val common = Seq(
+    "org.specs2" %% "specs2-scalacheck" % "4.9.2" % Test
+  )
 
   private val parallel = on(2, 13) {
     "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0" % Test
@@ -91,8 +93,8 @@ object dependencies extends AutoPlugin {
   )
 
   private val kotlin = Seq(
-    "com.jakewharton.timber" % "timber" % "4.7.1",
-    "com.novocode" % "junit-interface" % "0.11" % "test"
+    "io.github.microutils" % "kotlin-logging" % "1.7.9" % Provided,
+    "com.novocode" % "junit-interface" % "0.11" % Test
   )
 
   override def trigger: PluginTrigger = allRequirements
